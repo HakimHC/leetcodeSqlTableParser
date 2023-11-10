@@ -3,7 +3,7 @@ import re
 import pandas as pd
 
 
-class Database:
+class LcSqlParser:
     HEADER_IDX = 2  # The index of the header row in this list (if the input is clean) is always 2
     TABLE_NAME_IDX = 0  # The table name is always in the first line
 
@@ -45,9 +45,9 @@ class Database:
         :return:
         """
         raw_split = table_raw.split("\n")
-        table_name = Database.__get_table_name(raw_split[self.TABLE_NAME_IDX])
-        table_headers = Database.__get_table_headers(raw_split[self.HEADER_IDX])
-        table_2d_array = Database.__parse_table_contents(raw_split[self.HEADER_IDX + 1:])
+        table_name = LcSqlParser.__get_table_name(raw_split[self.TABLE_NAME_IDX])
+        table_headers = LcSqlParser.__get_table_headers(raw_split[self.HEADER_IDX])
+        table_2d_array = LcSqlParser.__parse_table_contents(raw_split[self.HEADER_IDX + 1:])
 
         self.tables[table_name] = pd.DataFrame(table_2d_array, columns=table_headers)
 
@@ -60,7 +60,7 @@ class Database:
         """
 
         regex_pattern = r"^[a-zA-Z]+\s*table:\s*$"
-        return Database.__regex_match(regex_pattern, line)
+        return LcSqlParser.__regex_match(regex_pattern, line)
 
     def __get_table_name(name_line: str) -> str:
         """
@@ -70,8 +70,8 @@ class Database:
         :return: Returns the table's name.
         """
 
-        if not Database.__is_table_name(name_line):
-            raise Database.NoTableNameError()
+        if not LcSqlParser.__is_table_name(name_line):
+            raise LcSqlParser.NoTableNameError()
         return name_line.split()[0]
 
     def __get_table_headers(header_line: str) -> list:
@@ -84,7 +84,7 @@ class Database:
 
         regex_pattern = r"^|\s+((?:[^\s|]+\s*\|\s*)*[^\s|]+)$"
         if not re.match(regex_pattern, header_line):
-            raise Database.InvalidHeaderLineError()
+            raise LcSqlParser.InvalidHeaderLineError()
         return [i.strip() for i in header_line.split("|") if i]
 
     def __is_delim_line(line: str) -> bool:
@@ -96,7 +96,7 @@ class Database:
         """
 
         regex_pattern = r"^[\+\-]+\s*$"
-        return Database.__regex_match(regex_pattern, line)
+        return LcSqlParser.__regex_match(regex_pattern, line)
 
     def __regex_match(pattern: str, s: str) -> bool:
         """
@@ -118,7 +118,7 @@ class Database:
         :param: table_raw: List of the row strings.
         :return: 2D array for the DataFrame.
         """
-        only_rows = [line for line in table_raw if not Database.__is_delim_line(line)]
+        only_rows = [line for line in table_raw if not LcSqlParser.__is_delim_line(line)]
         for index, row in enumerate(only_rows):
             only_rows[index] = [i.strip() for i in row.split("|") if i]
         return only_rows
