@@ -1,6 +1,7 @@
 import re
-
 import pandas as pd
+
+from Table import Table
 
 
 class LcSqlParser:
@@ -23,7 +24,7 @@ class LcSqlParser:
         """Constructor"""
         self.raw_str = raw_str.lstrip()
         self.tables_raw = self.__separate_tables()
-        self.tables = dict()
+        self.tables = list()
 
         for table_raw in self.tables_raw:
             self.__parse_table(table_raw)
@@ -48,8 +49,9 @@ class LcSqlParser:
         table_name = LcSqlParser.__get_table_name(raw_split[self.TABLE_NAME_IDX])
         table_headers = LcSqlParser.__get_table_headers(raw_split[self.HEADER_IDX])
         table_2d_array = LcSqlParser.__parse_table_contents(raw_split[self.HEADER_IDX + 1:])
+        df = pd.DataFrame(table_2d_array, columns=table_headers)
 
-        self.tables[table_name] = pd.DataFrame(table_2d_array, columns=table_headers)
+        self.tables.append(Table(df=df, name=table_name))
 
     def __is_table_name(line: str) -> bool:
         """
@@ -129,13 +131,4 @@ class LcSqlParser:
 
         :return: Returns a list of the existing tables.
         """
-        return list(self.tables.keys())
-
-    def table_to_df(self, name: str) -> pd.DataFrame:
-        """
-        Returns the DataFrame of the {name} table.
-
-        :param name: The name of the table.
-        :return: Returns the DataFrame of the {name} table.
-        """
-        return self.tables[name]
+        return list(self.tables)
