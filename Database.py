@@ -115,7 +115,7 @@ class Database:
         """
         Parses the table string into a 2D array.
 
-        :param: :table_raw: List of the row strings.
+        :param: table_raw: List of the row strings.
         :return: 2D array for the DataFrame.
         """
         only_rows = [line for line in table_raw if not Database.__is_delim_line(line)]
