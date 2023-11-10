@@ -24,11 +24,11 @@ def connect_to_database(driver_name="postgresql+psycopg2"):
 
 def main():
     parser = LcSqlParser(sample_data.table_raw)
-    print(f"All the tables: {parser.get_tables()}")
+    print(f"All the tables: {[table.name() for table in parser.tables()]}")
 
-    for table in parser.get_tables():
-        print("Name:", table.name)
-        print(table.df)
+    for table in parser.tables():
+        print("Name:", table.name())
+        print(table.df())
 
     sql_cnx = connect_to_database()
     parser.upload_to_database(sql_cnx)

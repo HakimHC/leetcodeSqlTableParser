@@ -24,20 +24,26 @@ class LcSqlParser:
         """
         def __init__(self, df: pd.DataFrame, name: str) -> None:
             """Constructor"""
-            self.df = df
-            self.name = name
+            self.__df = df
+            self.__name = name
 
         def __str__(self) -> str:
             """Stringify"""
-            return self.name
+            return self.__name
+
+        def df(self) -> pd.DataFrame:
+            return self.__df
+
+        def name(self) -> str:
+            return self.__name
 
     def __init__(self, raw_str):
         """Constructor"""
-        self.raw_str = raw_str.strip()
-        self.tables_raw = self.__separate_tables()
-        self.tables = list()
+        self.__raw_str = raw_str.strip()
+        self.__tables_raw = self.__separate_tables()
+        self.__tables = list()
 
-        for table_raw in self.tables_raw:
+        for table_raw in self.__tables_raw:
             self.__parse_table(table_raw)
 
     def __separate_tables(self) -> list[str]:
@@ -47,7 +53,7 @@ class LcSqlParser:
         :return: Returns a list of raw table strings.
         """
 
-        return re.split(r'\n\s*\n', self.raw_str)
+        return re.split(r'\n\s*\n', self.__raw_str)
 
     def __parse_table(self, table_raw) -> None:
         """
@@ -62,7 +68,7 @@ class LcSqlParser:
         table_2d_array = LcSqlParser.__parse_table_contents(raw_split[self.HEADER_IDX+1:])
         df = pd.DataFrame(table_2d_array, columns=table_headers)
 
-        self.tables.append(LcSqlParser.Table(df=df, name=table_name))
+        self.__tables.append(LcSqlParser.Table(df=df, name=table_name))
 
     @staticmethod
     def __is_table_name(line: str) -> bool:
@@ -142,14 +148,14 @@ class LcSqlParser:
             only_rows[index] = [i.strip() for i in row.split("|") if i]
         return only_rows
 
-    def get_tables(self) -> list:
+    def tables(self) -> list:
         """
         Returns a list of the existing tables.
 
         :return: Returns a list of the existing tables.
         """
-        return list(self.tables)
+        return list(self.__tables)
 
     def upload_to_database(self, sql_cnx):
-        for table in self.tables:
-            table.df.to_sql(name=table.name, con=sql_cnx, if_exists="replace")
+        for table in self.__tables:
+            table.df().to_sql(name=table.name(), con=sql_cnx, if_exists="replace")
