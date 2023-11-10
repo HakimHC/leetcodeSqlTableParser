@@ -2,6 +2,7 @@ import re
 import pandas as pd
 
 from Table import Table
+from sqlalchemy import engine, create_engine
 
 
 class LcSqlParser:
@@ -22,7 +23,7 @@ class LcSqlParser:
 
     def __init__(self, raw_str):
         """Constructor"""
-        self.raw_str = raw_str.lstrip()
+        self.raw_str = raw_str.strip()
         self.tables_raw = self.__separate_tables()
         self.tables = list()
 
@@ -132,3 +133,7 @@ class LcSqlParser:
         :return: Returns a list of the existing tables.
         """
         return list(self.tables)
+
+    def upload_to_database(self, sql_cnx):
+        for table in self.tables:
+            table.df.to_sql(name=table.name, con=sql_cnx, if_exists="replace")
