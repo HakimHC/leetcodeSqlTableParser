@@ -15,9 +15,8 @@ from LcSqlParser import LcSqlParser
 
 def connect_to_database(driver_name="postgresql+psycopg2") -> sqlalchemy.engine:
 
-
-# Implement logic to connect to a database with SQLAlchemy
-# ...
+    # Implement logic to connect to a database with SQLAlchemy
+    # ...
 
 def main():
     parser = LcSqlParser(sample_data.table_raw)  # Check out the sample data example
