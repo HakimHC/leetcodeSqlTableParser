@@ -4,8 +4,8 @@ import pandas as pd
 
 
 class Database:
-    HEADER_IDX = 3  # The index of the header row in this list (if the input is clean) is always 2
-    TABLE_NAME_IDX = 1  # The table name is always in the first line
+    HEADER_IDX = 2  # The index of the header row in this list (if the input is clean) is always 2
+    TABLE_NAME_IDX = 0  # The table name is always in the first line
 
     class NoTableNameError(Exception):
         """"Exception derived class to indicate that the input table does not have a name"""
@@ -21,7 +21,7 @@ class Database:
 
     def __init__(self, raw_str):
         """Constructor"""
-        self.raw_str = raw_str
+        self.raw_str = raw_str.lstrip()
         self.tables_raw = self.__separate_tables()
         self.tables = dict()
 
