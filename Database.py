@@ -1,5 +1,7 @@
 import re
 
+import pandas as pd
+
 
 class Database:
     HEADER_IDX = 3  # The index of the header row in this list (if the input is clean) is always 2
@@ -35,10 +37,12 @@ class Database:
         return re.split(r'\n\s*\n', self.raw_str)
 
     def __parse_table(self, table_raw):
-        raw_split = table_raw.lstrip().split("\n")
+        raw_split = table_raw.split("\n")
         table_name = Database.__get_table_name(raw_split[self.TABLE_NAME_IDX])
         table_headers = Database.__get_table_headers(raw_split[self.HEADER_IDX])
+        table_2d_array = Database.__parse_table_contents(raw_split[self.HEADER_IDX + 1:])
 
+        self.tables[table_name] = pd.DataFrame(table_2d_array, columns=table_headers)
 
     def __is_table_name(line: str) -> bool:
         """
@@ -85,3 +89,14 @@ class Database:
         if not re.match(pattern, s):
             ret = False
         return ret
+
+    def __parse_table_contents(table_raw: list[str]) -> list[list[str]]:
+        return [
+            [1, 'hakim']
+        ]
+
+    def get_tables(self) -> dict:
+        return list(self.tables.keys())
+
+    def get_df(self, name: str) -> pd.DataFrame:
+        return self.tables[name]
