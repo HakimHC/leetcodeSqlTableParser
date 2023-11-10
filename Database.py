@@ -47,11 +47,9 @@ class Database:
         :line: A string to inspect.
         :return: Returns True if the line contains a table's name, False otherwise.
         """
+
         regex_pattern = r"^[a-zA-Z]+\s*table:\s*$"
-        ret = True
-        if not re.match(regex_pattern, line):
-            ret = False
-        return ret
+        return Database.__regex_match(regex_pattern, line)
 
     def __get_table_name(name_line: str) -> str:
         """
@@ -78,5 +76,12 @@ class Database:
             raise Database.InvalidHeaderLineError()
         return [i.strip() for i in header_line.split("|") if i]
 
-    # def __is_delim_line(line: str) -> str:
+    def __is_delim_line(line: str) -> bool:
+        regex_pattern = r"^[+-]+$"
+        return Database.__regex_match(regex_pattern, line)
 
+    def __regex_match(pattern: str, s: str) -> bool:
+        ret = True
+        if not re.match(pattern, s):
+            ret = False
+        return ret
