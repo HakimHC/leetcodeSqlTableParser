@@ -81,7 +81,7 @@ class Database:
         return [i.strip() for i in header_line.split("|") if i]
 
     def __is_delim_line(line: str) -> bool:
-        regex_pattern = r"^[+-]+$"
+        regex_pattern = r"^[\+\-]+\s*$"
         return Database.__regex_match(regex_pattern, line)
 
     def __regex_match(pattern: str, s: str) -> bool:
@@ -91,12 +91,13 @@ class Database:
         return ret
 
     def __parse_table_contents(table_raw: list[str]) -> list[list[str]]:
-        return [
-            [1, 'hakim']
-        ]
+        only_rows = [line for line in table_raw if not Database.__is_delim_line(line)]
+        for index, row in enumerate(only_rows):
+            only_rows[index] = [i.strip() for i in row.split("|") if i]
+        return only_rows
 
-    def get_tables(self) -> dict:
+    def get_tables(self) -> list:
         return list(self.tables.keys())
 
-    def get_df(self, name: str) -> pd.DataFrame:
+    def table_to_df(self, name: str) -> pd.DataFrame:
         return self.tables[name]
