@@ -1,9 +1,7 @@
 import re
 import pandas as pd
 
-from Table import Table
-from sqlalchemy import engine, create_engine
-
+from sqlalchemy import engine
 
 class LcSqlParser:
     HEADER_IDX = 2  # The index of the header row in this list (if the input is clean) is always 2
@@ -20,6 +18,19 @@ class LcSqlParser:
         def __init__(self):
             """Constructor"""
             super().__init__("The header line of the table is not valid.")
+
+    class Table:
+        """
+        This class' sole purpose is to hold a dataframe with a bit of metadata (the name of the SQL table)
+        """
+        def __init__(self, df: pd.DataFrame, name: str) -> None:
+            """Constructor"""
+            self.df = df
+            self.name = name
+
+        def __str__(self) -> str:
+            """Stringify"""
+            return self.name
 
     def __init__(self, raw_str):
         """Constructor"""
@@ -52,7 +63,7 @@ class LcSqlParser:
         table_2d_array = LcSqlParser.__parse_table_contents(raw_split[self.HEADER_IDX + 1:])
         df = pd.DataFrame(table_2d_array, columns=table_headers)
 
-        self.tables.append(Table(df=df, name=table_name))
+        self.tables.append(LcSqlParser.Table(df=df, name=table_name))
 
     def __is_table_name(line: str) -> bool:
         """
