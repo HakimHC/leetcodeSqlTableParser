@@ -2,6 +2,9 @@ import re
 
 
 class Database:
+    HEADER_IDX = 3  # The index of the header row in this list (if the input is clean) is always 2
+    TABLE_NAME_IDX = 1  # The table name is always in the first line
+
     class NoTableNameError(Exception):
         """"Exception derived class to indicate that the input table does not have a name"""
         def __init__(self):
@@ -18,6 +21,7 @@ class Database:
         """Constructor"""
         self.raw_str = raw_str
         self.tables_raw = self.__separate_tables()
+        self.tables = dict()
 
         for table_raw in self.tables_raw:
             self.__parse_table(table_raw)
@@ -31,7 +35,10 @@ class Database:
         return re.split(r'\n\s*\n', self.raw_str)
 
     def __parse_table(self, table_raw):
-        pass
+        raw_split = table_raw.lstrip().split("\n")
+        table_name = Database.__get_table_name(raw_split[self.TABLE_NAME_IDX])
+        table_headers = Database.__get_table_headers(raw_split[self.HEADER_IDX])
+
 
     def __is_table_name(line: str) -> bool:
         """
@@ -46,7 +53,7 @@ class Database:
             ret = False
         return ret
 
-    def get_table_name(name_line: str) -> str:
+    def __get_table_name(name_line: str) -> str:
         """
         This function parses the table input and returns the table's name.
 
@@ -57,4 +64,19 @@ class Database:
         if not Database.__is_table_name(name_line):
             raise Database.NoTableNameError()
         return name_line.split()[0]
+
+    def __get_table_headers(header_line: str) -> list:
+        """
+        This function parses a LeetCode SQL table input, and returns its headers
+
+        :param header_line: A string of the line where the headers are found.
+        :return: Returns a list of the table's headers.
+        """
+
+        regex_pattern = r"^|\s+((?:[^\s|]+\s*\|\s*)*[^\s|]+)$"
+        if not re.match(regex_pattern, header_line):
+            raise Database.InvalidHeaderLineError()
+        return [i.strip() for i in header_line.split("|") if i]
+
+    # def __is_delim_line(line: str) -> str:
 
