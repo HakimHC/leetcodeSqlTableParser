@@ -6,8 +6,8 @@ def main():
     print(f"All the tables: {mydb.get_tables()}")
 
     for table in mydb.get_tables():
-        print("Name:", table)
-        print(mydb.table_to_df(table))
+        print("Name:", table.name)
+        print(table.df)
 
 
 if __name__ == "__main__":
