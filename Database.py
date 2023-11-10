@@ -34,9 +34,16 @@ class Database:
 
         :return: Returns a list of raw table strings.
         """
+
         return re.split(r'\n\s*\n', self.raw_str)
 
-    def __parse_table(self, table_raw):
+    def __parse_table(self, table_raw) -> None:
+        """
+        This function parses a raw table string and creates a DataFrame as the value of the table's key.
+
+        :param table_raw: The raw string of the table.
+        :return:
+        """
         raw_split = table_raw.split("\n")
         table_name = Database.__get_table_name(raw_split[self.TABLE_NAME_IDX])
         table_headers = Database.__get_table_headers(raw_split[self.HEADER_IDX])
@@ -81,23 +88,54 @@ class Database:
         return [i.strip() for i in header_line.split("|") if i]
 
     def __is_delim_line(line: str) -> bool:
+        """
+        This function determines whether a string is a row delimiter line or not.
+
+        :param: :line: String input.
+        :return: Returns True if the string is a delimiter line, False otherwise.
+        """
+
         regex_pattern = r"^[\+\-]+\s*$"
         return Database.__regex_match(regex_pattern, line)
 
     def __regex_match(pattern: str, s: str) -> bool:
+        """
+        Simple regex matching utility.
+
+        :param s: String to match.
+        :param pattern: RegEx pattern.
+        :return:
+        """
         ret = True
         if not re.match(pattern, s):
             ret = False
         return ret
 
     def __parse_table_contents(table_raw: list[str]) -> list[list[str]]:
+        """
+        Parses the table string into a 2D array.
+
+        :param: :table_raw: List of the row strings.
+        :return: 2D array for the DataFrame.
+        """
         only_rows = [line for line in table_raw if not Database.__is_delim_line(line)]
         for index, row in enumerate(only_rows):
             only_rows[index] = [i.strip() for i in row.split("|") if i]
         return only_rows
 
     def get_tables(self) -> list:
+        """
+        Returns a list of the existing tables.
+
+        :return: Returns a list of the existing tables.
+        """
         return list(self.tables.keys())
 
     def table_to_df(self, name: str) -> pd.DataFrame:
+        """
+        Returns the DataFrame of the {name} table.
+
+        :param name: The name of the table.
+        :return: Returns the DataFrame of the {name} table.
+        """
         return self.tables[name]
