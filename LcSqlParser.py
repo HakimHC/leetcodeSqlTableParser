@@ -1,7 +1,6 @@
 import re
 import pandas as pd
 
-from sqlalchemy import engine
 
 class LcSqlParser:
     HEADER_IDX = 2  # The index of the header row in this list (if the input is clean) is always 2
@@ -60,11 +59,12 @@ class LcSqlParser:
         raw_split = table_raw.split("\n")
         table_name = LcSqlParser.__get_table_name(raw_split[self.TABLE_NAME_IDX])
         table_headers = LcSqlParser.__get_table_headers(raw_split[self.HEADER_IDX])
-        table_2d_array = LcSqlParser.__parse_table_contents(raw_split[self.HEADER_IDX + 1:])
+        table_2d_array = LcSqlParser.__parse_table_contents(raw_split[self.HEADER_IDX+1:])
         df = pd.DataFrame(table_2d_array, columns=table_headers)
 
         self.tables.append(LcSqlParser.Table(df=df, name=table_name))
 
+    @staticmethod
     def __is_table_name(line: str) -> bool:
         """
         This functions determines whether the line contains the table's name.
@@ -76,6 +76,7 @@ class LcSqlParser:
         regex_pattern = r"^[a-zA-Z]+\s*table:\s*$"
         return LcSqlParser.__regex_match(regex_pattern, line)
 
+    @staticmethod
     def __get_table_name(name_line: str) -> str:
         """
         This function parses the table input and returns the table's name.
@@ -88,6 +89,7 @@ class LcSqlParser:
             raise LcSqlParser.NoTableNameError()
         return name_line.split()[0]
 
+    @staticmethod
     def __get_table_headers(header_line: str) -> list:
         """
         This function parses a LeetCode SQL table input, and returns its headers
@@ -101,6 +103,7 @@ class LcSqlParser:
             raise LcSqlParser.InvalidHeaderLineError()
         return [i.strip() for i in header_line.split("|") if i]
 
+    @staticmethod
     def __is_delim_line(line: str) -> bool:
         """
         This function determines whether a string is a row delimiter line or not.
@@ -112,6 +115,7 @@ class LcSqlParser:
         regex_pattern = r"^[\+\-]+\s*$"
         return LcSqlParser.__regex_match(regex_pattern, line)
 
+    @staticmethod
     def __regex_match(pattern: str, s: str) -> bool:
         """
         Simple regex matching utility.
@@ -125,7 +129,8 @@ class LcSqlParser:
             ret = False
         return ret
 
-    def __parse_table_contents(table_raw: list[str]) -> list[list[str]]:
+    @staticmethod
+    def __parse_table_contents(table_raw: list[str]) -> list:
         """
         Parses the table string into a 2D array.
 
