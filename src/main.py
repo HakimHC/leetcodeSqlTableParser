@@ -1,6 +1,6 @@
 import os
 import sample_data
-from LcSqlParser import LcSqlParser
+from lib.LcSqlParser import LcSqlParser
 from sqlalchemy import create_engine, URL
 
 
