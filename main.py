@@ -1,17 +1,25 @@
 import os
 import sample_data
 from LcSqlParser import LcSqlParser
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, URL
 
 
-def connect_to_database():
-    host = os.getenv("DB_HOST")
-    database = os.getenv("DB_DATABASE")
-    port = os.getenv("DB_PORT")
-    user = os.getenv("DB_USER")
-    password = os.getenv("DB_PASSWORD")
+def connect_to_database(driver_name="postgresql+psycopg2"):
+    """
+    This function facilitates the connection to the database.
 
-    return create_engine(f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}")
+    :param driver_name: Database driver string (defaults to postgresql+psycopg2)
+    :return: Returns the newly established database connection object
+    """
+    url_object = URL.create(
+        driver_name,
+        username=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT"),
+        database=os.getenv("DB_DATABASE")
+    )
+    return create_engine(url_object)
 
 def main():
     parser = LcSqlParser(sample_data.table_raw)
