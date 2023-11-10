@@ -21,6 +21,7 @@ def connect_to_database(driver_name="postgresql+psycopg2"):
     )
     return create_engine(url_object)
 
+
 def main():
     parser = LcSqlParser(sample_data.table_raw)
     print(f"All the tables: {parser.get_tables()}")
