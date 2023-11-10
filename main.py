@@ -1,9 +1,8 @@
 import sample_data
-from Database import Database
-
+from LcSqlParser import LcSqlParser
 
 def main():
-    mydb = Database(sample_data.table_raw)
+    mydb = LcSqlParser(sample_data.table_raw)
     print(f"All the tables: {mydb.get_tables()}")
 
     for table in mydb.get_tables():
