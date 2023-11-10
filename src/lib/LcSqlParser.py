@@ -44,7 +44,7 @@ class LcSqlParser:
         self.__tables = list()
 
         for table_raw in self.__tables_raw:
-            self.__parse_table(table_raw)
+            self.__tables.append(self.__parse_table(table_raw))
 
     def __separate_tables(self) -> list[str]:
         """
@@ -55,7 +55,7 @@ class LcSqlParser:
 
         return re.split(r'\n\s*\n', self.__raw_str)
 
-    def __parse_table(self, table_raw) -> None:
+    def __parse_table(self, table_raw) -> Table:
         """
         This function parses a raw table string and creates a DataFrame as the value of the table's key.
 
@@ -68,7 +68,7 @@ class LcSqlParser:
         table_2d_array = LcSqlParser.__parse_table_contents(raw_split[self.__HEADER_IDX+1:])
         df = pd.DataFrame(table_2d_array, columns=table_headers)
 
-        self.__tables.append(LcSqlParser.Table(df=df, name=table_name))
+        return LcSqlParser.Table(df=df, name=table_name)
 
     @staticmethod
     def __is_table_name(line: str) -> bool:
