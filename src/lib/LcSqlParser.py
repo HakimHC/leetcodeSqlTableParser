@@ -3,8 +3,8 @@ import pandas as pd
 
 
 class LcSqlParser:
-    HEADER_IDX = 2  # The index of the header row in this list (if the input is clean) is always 2
-    TABLE_NAME_IDX = 0  # The table name is always in the first line
+    __HEADER_IDX = 2  # The index of the header row in this list (if the input is clean) is always 2
+    __TABLE_NAME_IDX = 0  # The table name is always in the first line
 
     class NoTableNameError(Exception):
         """"Exception derived class to indicate that the input table does not have a name"""
@@ -63,9 +63,9 @@ class LcSqlParser:
         :return:
         """
         raw_split = table_raw.split("\n")
-        table_name = LcSqlParser.__get_table_name(raw_split[self.TABLE_NAME_IDX])
-        table_headers = LcSqlParser.__get_table_headers(raw_split[self.HEADER_IDX])
-        table_2d_array = LcSqlParser.__parse_table_contents(raw_split[self.HEADER_IDX+1:])
+        table_name = LcSqlParser.__get_table_name(raw_split[self.__TABLE_NAME_IDX])
+        table_headers = LcSqlParser.__get_table_headers(raw_split[self.__HEADER_IDX])
+        table_2d_array = LcSqlParser.__parse_table_contents(raw_split[self.__HEADER_IDX+1:])
         df = pd.DataFrame(table_2d_array, columns=table_headers)
 
         self.__tables.append(LcSqlParser.Table(df=df, name=table_name))
