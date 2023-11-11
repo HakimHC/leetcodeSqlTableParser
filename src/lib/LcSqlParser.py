@@ -67,6 +67,8 @@ class LcSqlParser:
         table_headers = LcSqlParser.__get_table_headers(raw_split[self.__HEADER_IDX])
         table_2d_array = LcSqlParser.__parse_table_contents(raw_split[self.__HEADER_IDX+1:])
         df = pd.DataFrame(table_2d_array, columns=table_headers)
+        df.apply(pd.to_numeric, errors="coerce").fillna(df, inplace=True)
+        df.replace("null", None, inplace=True)
 
         return LcSqlParser.Table(df=df, name=table_name)
 
@@ -158,4 +160,4 @@ class LcSqlParser:
 
     def upload_to_database(self, sql_cnx):
         for table in self.__tables:
-            table.df().to_sql(name=table.name(), con=sql_cnx, if_exists="replace")
+            table.df().to_sql(name=table.name(), con=sql_cnx, if_exists="replace", index=False)
