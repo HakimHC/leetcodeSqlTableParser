@@ -67,7 +67,7 @@ class LcSqlParser:
         table_headers = LcSqlParser.__get_table_headers(raw_split[self.__HEADER_IDX])
         table_2d_array = LcSqlParser.__parse_table_contents(raw_split[self.__HEADER_IDX+1:])
         df = pd.DataFrame(table_2d_array, columns=table_headers)
-        df.apply(pd.to_numeric, errors="coerce").fillna(df, inplace=True)
+        df = df.apply(pd.to_numeric, errors="coerce").fillna(df)
         df.replace("null", None, inplace=True)
 
         return LcSqlParser.Table(df=df, name=table_name)
@@ -81,7 +81,7 @@ class LcSqlParser:
         :return: Returns True if the line contains a table's name, False otherwise.
         """
 
-        regex_pattern = r"^[a-zA-Z]+\s*table:\s*$"
+        regex_pattern = r'^\w+\s*(?: table)?\:?$'
         return LcSqlParser.__regex_match(regex_pattern, line)
 
     @staticmethod
